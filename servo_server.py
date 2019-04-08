@@ -2,6 +2,10 @@
 
 # import only required components of flask library
 from flask import Flask, jsonify, request, render_template
+import serial
+
+ser = serial.Serial('/dev/ttyACM0')  # open serial port
+print(ser.name)         # check which port was really used
 
 # create a flask object
 app = Flask(__name__)
@@ -21,7 +25,7 @@ def send(): # arbitrary function name
         # log for debugging
         print("servo %2.0d: %5.0d" % (i, val))
         # set the servo to the value at the key
-        # [servo.set(i, val)] TODO
+        ser.write(bytes([180 + i, val]));
         
     print(type(all_args))
     # return the dictionary as json for debugging
