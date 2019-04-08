@@ -7,7 +7,7 @@
     <body>
         <form action="/" method="get" id="servo_form">
             <ol start=0>
-                {% for i in range(0, 16) %}
+                {% for i in range(0, 7) %}
                     {% if i|string in servos %}
                         <li><input value="{{ servos[i|string] }}" type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="{{ i }}"><br></li>
                     {% else %}
