@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Underwater Robot</title>
+    </head>
+
+    <body>
+        <form action="/" method="get" id="servo_form">
+            <ol start=0>
+                {% for i in range(0, 16) %}
+                    {% if i|string in servos %}
+                        <li><input value="{{ servos[i|string] }}" type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="{{ i }}"><br></li>
+                    {% else %}
+                        <li><input type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()' name="{{ i }}"><br></li>
+                    {% endif %}
+                {% endfor %}
+                <input type="submit" value="Submit">
+            </ol>
+        </form>
+        <form action="/">
+            <input type="submit" value="Reset" />
+        </form>
+    </body>
+
+</html>
