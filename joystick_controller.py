@@ -46,27 +46,41 @@ def readJoystick(js):
     for i, axis in enumerate([js.get_axis(i) for i in range(js.get_numaxes())]):
         if((not js.get_button(7)) and not (js.get_button(6) and i != 2)):
             axis = 0
-        norm = (axis + 1.0) * (127/ 2.0) # normalize to the range 0-127
+        norm = (axis + 1.0) * (179/ 2.0) # normalize to the range 0-179
         output.append(round(norm))
 
         # print the axis number for debugging
         wrerr(str(i) + ": ") 
         #  print an exclamation point if the value is above this dot, otherwise a period
         for d in range(dots):
-            if d < (norm * dots)/127:
+            if d < (norm * dots)/179:
                 wrerr("!")
             else:
                 wrerr(".")
 
         wrerr("\t")
 
+    output.append([]) # last value in array will be list of buttons
+
     for j, button in enumerate([js.get_button(k) for k in range(js.get_numbuttons())]):
-        #output.append(button)
+        output[4].append(button)
         wrerr("Button " + str(j) + ": " + str(button))
         
     #prerr("")
     #pygame.event.clear()
     return output
+
+last_query = {
+        3: 0, # Motor A/Arm Motor
+        4: 90, # right
+        5: 90, # left
+        6: 90, # up-right
+        7: 90, # up-left
+        8: 90, # Arm Servo
+        9: 90, # Linear Actuator
+        10: 90, # Camera Servo
+        11: 0 # Motor B/Mini-bot
+        }
 
 
 # normal script entry
@@ -107,14 +121,24 @@ if __name__ == "__main__":
     # loop and read input
     while True:
         values = readJoystick(js) # get array of axis values
+
+        print('\n\n\n', values, '\n\n\n')
         
         # map joystick axis values to servos
         my_query = {
-                0: str((values[1] - values[0])/2), # right
-                1: str((values[1] + values[0])/2), # left
-                2: str(values[3]), # up-right
-                3: str(values[3]), # up-left
+                3: 0, # Motor A/Arm Motor
+                4: str(round((values[1] - values[0])/2)), # right
+                5: str(round((values[1] + values[0])/2)), # left
+                6: str(values[3]), # up-right
+                7: str(values[3]), # up-left
+                8: 90, # Arm Servo
+                9: 90, # Linear Actuator
+                10: 90, # Camera Servo
+                11: 0 # Motor B/Mini-bot
                 }
+
+        # create a copy to be referenced in the next run
+        last_query = my_query.copy()
 
         my_query = urllib.parse.urlencode(my_query)
         
