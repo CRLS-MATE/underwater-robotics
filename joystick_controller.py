@@ -104,25 +104,33 @@ if __name__ == "__main__":
         prerr("")
 
     # print an error message if no joystick was specified
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         pygame.quit()
         prerr("You need to choose a specific joystick with the command 'python %s <joystick number> 1>out.log'" % sys.argv[0])
         prerr("")
         exit(1)
 
     joystickNum = int(sys.argv[1])
+    joystickNumAux = int(sys.argv[2])
 
     # initialize the joystick that was specified on the command line 
     js = pygame.joystick.Joystick(joystickNum)
     if not js.get_init():
         js.init()
+
+    # initialize the joystick that was specified on the command line 
+    js_aux = pygame.joystick.Joystick(joystickNumAux)
+    if not js_aux.get_init():
+        js_aux.init()
         
     n = 0 
     # loop and read input
     while True:
         values = readJoystick(js) # get array of axis values
+        values_aux = readJoystick(js_aux)
 
         print('\n\n\n', values, '\n\n\n')
+        print('\n\n\n', values_aux, '\n\n\n')
         
         # map joystick axis values to servos
         my_query = {
@@ -131,11 +139,38 @@ if __name__ == "__main__":
                 5: str(round((values[1] + values[0])/2)), # left
                 6: str(values[3]), # up-right
                 7: str(values[3]), # up-left
-                8: 90, # Arm Servo
-                9: 90, # Linear Actuator
-                10: 90, # Camera Servo
+                8: last_query[8], # Arm Servo
+                9: last_query[9], # Linear Actuator
+                10: last_query[10], # Camera Servo
                 11: 0 # Motor B/Mini-bot
                 }
+
+        # add something at index 0 to make buttons match visible buttons
+        values_aux[4].insert(0, 0)
+
+        # Check aux buttons 7/8 for Motor A/Arm Motor
+        if(values_aux[4][7] == 1): # button 7 pressed
+            my_query[3] = 1
+        elif(values_aux[4][8] == 1):
+            my_query[3] = -1
+
+        # Check aux buttons 9/10 for Arm Servo
+        if(values_aux[4][9] == 1):
+            my_query[8] += 1
+        if(values_aux[4][10] == 1):
+            my_query[8] -= 1
+
+        # Check aux buttons 5/6 for Linear Actuator
+        if(values_aux[4][5] == 1):
+            my_query[9] += 1
+        if(values_aux[4][6] == 1):
+            my_query[9] -= 1
+
+        # Check aux buttons 2/4 for Camera Servo
+        if(values_aux[4][2] == 1):
+            my_query[10] += 1
+        if(values_aux[4][4] == 1):
+            my_query[10] -= 1
 
         # create a copy to be referenced in the next run
         last_query = my_query.copy()
