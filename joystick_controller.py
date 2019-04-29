@@ -150,9 +150,9 @@ if __name__ == "__main__":
 
         # Check aux buttons 7/8 for Motor A/Arm Motor
         if(values_aux[4][7] == 1): # button 7 pressed
-            my_query[3] = 1
+            my_query[3] = 179
         elif(values_aux[4][8] == 1):
-            my_query[3] = -1
+            my_query[3] = 0
 
         # Check aux buttons 9/10 for Arm Servo
         if(values_aux[4][9] == 1):
