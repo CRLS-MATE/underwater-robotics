@@ -25,7 +25,10 @@ def send(): # arbitrary function name
         # log for debugging
         print("servo %2.0d: %5.0d" % (i, val))
         # set the servo to the value at the key
-        ser.write(bytes([180 + i, val]));
+        if(i > 1):
+            ser.write(bytes([180 + i, val]));
+        else:
+            print("servo index: %d too low" % i)
         
     print(type(all_args))
     # return the dictionary as json for debugging

@@ -13,7 +13,9 @@ void setup() {
   digitalWrite(13, HIGH); // Direction pin for B
   
   for (int x = 2; x <= 11; x++) {
-    myservos[x - 2].attach(x);  // attaches the servo on pin 9 to the servo object
+    if(x != 3 && x != 11) {
+      myservos[x - 2].attach(x);  // attaches the servo on pin 9 to the servo object
+    }
 //    if (!block(x)) {
 //      myservos[x - 2].attach(x);  // attaches the servo on pin 9 to the servo object
 //    }
@@ -32,7 +34,11 @@ void loop() {
 //        Serial.println(currentServo);
 //      }
     } else if(inByte <= 180) {
-      myservos[currentServo - 2].write(inByte);
+      if(currentServo != 3 && currentServo != 11) {
+        myservos[currentServo - 2].write(inByte);
+      } else {
+        analogWrite(currentServo, float(inByte) * (255.0 / 180.0));
+      }
 //      Serial.print(currentServo);
 //      Serial.print('\t');
 //      Serial.println(inByte);
