@@ -15,6 +15,14 @@ void setup() {
   for (int x = 2; x <= 11; x++) {
     if(x != 3 && x != 11) {
       myservos[x - 2].attach(x);  // attaches the servo on pin 9 to the servo object
+
+      switch(x) {
+        case 8: // claw
+          myservos[x-2].write(45);
+          break;
+        default:
+          myservos[x-2].write(90);
+      }
     }
 //    if (!block(x)) {
 //      myservos[x - 2].attach(x);  // attaches the servo on pin 9 to the servo object
