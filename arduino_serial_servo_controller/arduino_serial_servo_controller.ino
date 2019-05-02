@@ -21,7 +21,7 @@ void setup() {
           myservos[x-2].write(45);
           break;
         default:
-          myservos[x-2].write(90);
+          myservos[x-2].write(92);
       }
     }
 //    if (!block(x)) {
