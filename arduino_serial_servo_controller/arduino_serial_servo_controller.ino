@@ -45,7 +45,13 @@ void loop() {
       if(currentServo != 3 && currentServo != 11) {
         myservos[currentServo - 2].write(inByte);
       } else {
-        analogWrite(currentServo, float(inByte) * (255.0 / 180.0));
+        if(inByte > 90) {
+          digitalWrite(currentServo + 9, HIGH); // Set direction
+          analogWrite(currentServo, float(inByte - 90) * (255.0 / 90.0));
+        } else {
+          digitalWrite(currentServo + 9, LOW); // Set direction
+          analogWrite(currentServo, float(inByte) * (255.0 / 90.0));          
+        }
       }
 //      Serial.print(currentServo);
 //      Serial.print('\t');

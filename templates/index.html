@@ -6,18 +6,35 @@
 
     <body>
         <form action="/" method="get" id="servo_form">
-            <ol start=0>
-                {% for i in range(0, 7) %}
-                    {% if i|string in servos %}
-                        <li><input value="{{ servos[i|string] }}" type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="{{ i }}"><br></li>
-                    {% else %}
-                        <li><input type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()' name="{{ i }}"><br></li>
-                    {% endif %}
-                {% endfor %}
-                <input type="submit" value="Submit">
-            </ol>
+            <label for="4">Right Side Thruster</label>
+            <input value={% if 4|string in servos %}"{{ servos[4|string] }}"{% else %}"92"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="4"><br>
+            <label for="5">Left Side Thruster</label>
+            <input value={% if 5|string in servos %}"{{ servos[5|string] }}"{% else %}"92"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="5"><br>
+            <label for="6">Top Right Thruster</label>
+            <input value={% if 6|string in servos %}"{{ servos[6|string] }}"{% else %}"92"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="6"><br>
+            <label for="7">Top Left Thruster</label>
+            <input value={% if 7|string in servos %}"{{ servos[7|string] }}"{% else %}"92"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="7"><br>
+            <label for="3">Arm/Wrist Motor</label>
+            <input value={% if 3|string in servos %}"{{ servos[3|string] }}"{% else %}"90"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="3"><br>
+            <label for="11">Ocean Boii Thruster</label>
+            <input value={% if 11|string in servos %}"{{ servos[11|string] }}"{% else %}"90"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="11"><br>
+            <label for="8">Claw Servo</label>
+            <input value={% if 8|string in servos %}"{{ servos[8|string] }}"{% else %}"45"{% endif %} type="range" min="45" max="80" onchange='document.getElementById("servo_form").submit()'  name="8"><br>
+            <label for="9">Arm Linear Actuator</label>
+            <input value={% if 9|string in servos %}"{{ servos[9|string] }}"{% else %}"45"{% endif %} type="range" min="45" max="80" onchange='document.getElementById("servo_form").submit()'  name="9"><br>
+            <label for="10">Camera Servo</label>
+            <input value={% if 10|string in servos %}"{{ servos[10|string] }}"{% else %}"90"{% endif %} type="range" min="0" max="180" onchange='document.getElementById("servo_form").submit()'  name="10"><br>
         </form>
         <form action="/">
+            <input type="hidden" name="4" value="92" />
+            <input type="hidden" name="5" value="92" />
+            <input type="hidden" name="6" value="92" />
+            <input type="hidden" name="7" value="92" />
+            <input type="hidden" name="3" value="90" />
+            <input type="hidden" name="11" value="90" />
+            <input type="hidden" name="8" value="45" />
+            <input type="hidden" name="9" value="45" />
+            <input type="hidden" name="10" value="90" />
             <input type="submit" value="Reset" />
         </form>
     </body>
