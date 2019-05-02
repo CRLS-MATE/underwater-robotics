@@ -4,7 +4,7 @@
 from flask import Flask, jsonify, request, render_template
 import serial
 
-ser = serial.Serial('/dev/ttyACM0')  # open serial port
+ser = serial.Serial('/dev/ttyACM0', write_timeout=.1)  # open serial port
 print(ser.name)         # check which port was really used
 
 # create a flask object
@@ -25,7 +25,15 @@ def send(): # arbitrary function name
         # log for debugging
         print("servo %2.0d: %5.0d" % (i, val))
         # set the servo to the value at the key
-        ser.write(bytes([180 + i, val]));
+        print("about to write")
+        ser.flush()
+        try:
+            ser.write(bytes([180 + i, val]));
+        except:
+            print("------------------------ FLUSHING ------------------------")
+            ser.reset_input_buffer()
+            ser.reset_output_buffer()
+        print("just wrote")
         
     print(type(all_args))
     # return the dictionary as json for debugging
