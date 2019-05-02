@@ -26,9 +26,12 @@ def send(): # arbitrary function name
         print("servo %2.0d: %5.0d" % (i, val))
         # set the servo to the value at the key
         print("about to write")
-        ser.flush()
+        # ser.flush()
         try:
-            ser.write(bytes([180 + i, val]));
+            if(i > 1):
+                ser.write(bytes([180 + i, val]));
+            else:
+                print("servo index: %d too low" % i)
         except:
             print("------------------------ FLUSHING ------------------------")
             ser.reset_input_buffer()

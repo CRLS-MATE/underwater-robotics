@@ -46,27 +46,41 @@ def readJoystick(js):
     for i, axis in enumerate([js.get_axis(i) for i in range(js.get_numaxes())]):
         if((not js.get_button(7)) and not (js.get_button(6) and i != 2)):
             axis = 0
-        norm = (axis + 1.0) * (127/ 2.0) # normalize to the range 0-127
+        norm = (axis + 1.0) * (179/ 2.0) # normalize to the range 0-179
         output.append(round(norm))
 
         # print the axis number for debugging
         wrerr(str(i) + ": ") 
         #  print an exclamation point if the value is above this dot, otherwise a period
         for d in range(dots):
-            if d < (norm * dots)/127:
+            if d < (norm * dots)/179:
                 wrerr("!")
             else:
                 wrerr(".")
 
         wrerr("\t")
 
+    output.append([]) # last value in array will be list of buttons
+
     for j, button in enumerate([js.get_button(k) for k in range(js.get_numbuttons())]):
-        #output.append(button)
+        output[4].append(button)
         wrerr("Button " + str(j) + ": " + str(button))
         
     #prerr("")
     #pygame.event.clear()
     return output
+
+last_query = {
+        3: 0, # Motor A/Arm Motor
+        4: 90, # right
+        5: 90, # left
+        6: 90, # up-right
+        7: 90, # up-left
+        8: 90, # Arm Servo
+        9: 90, # Linear Actuator
+        10: 90, # Camera Servo
+        11: 0 # Motor B/Mini-bot
+        }
 
 
 # normal script entry
@@ -90,31 +104,76 @@ if __name__ == "__main__":
         prerr("")
 
     # print an error message if no joystick was specified
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         pygame.quit()
         prerr("You need to choose a specific joystick with the command 'python %s <joystick number> 1>out.log'" % sys.argv[0])
         prerr("")
         exit(1)
 
     joystickNum = int(sys.argv[1])
+    joystickNumAux = int(sys.argv[2])
 
     # initialize the joystick that was specified on the command line 
     js = pygame.joystick.Joystick(joystickNum)
     if not js.get_init():
         js.init()
+
+    # initialize the joystick that was specified on the command line 
+    js_aux = pygame.joystick.Joystick(joystickNumAux)
+    if not js_aux.get_init():
+        js_aux.init()
         
     n = 0 
     # loop and read input
     while True:
         values = readJoystick(js) # get array of axis values
+        values_aux = readJoystick(js_aux)
+
+        print('\n\n\n', values, '\n\n\n')
+        print('\n\n\n', values_aux, '\n\n\n')
         
         # map joystick axis values to servos
         my_query = {
-                0: str((values[1] - values[0])/2), # right
-                1: str((values[1] + values[0])/2), # left
-                2: str(values[3]), # up-right
-                3: str(values[3]), # up-left
+                3: 0, # Motor A/Arm Motor
+                4: str(round((values[1] - values[0])/2)), # right
+                5: str(round((values[1] + values[0])/2)), # left
+                6: str(values[3]), # up-right
+                7: str(values[3]), # up-left
+                8: last_query[8], # Arm Servo
+                9: last_query[9], # Linear Actuator
+                10: last_query[10], # Camera Servo
+                11: 0 # Motor B/Mini-bot
                 }
+
+        # add something at index 0 to make buttons match visible buttons
+        values_aux[4].insert(0, 0)
+
+        # Check aux buttons 7/8 for Motor A/Arm Motor
+        if(values_aux[4][7] == 1): # button 7 pressed
+            my_query[3] = 179
+        elif(values_aux[4][8] == 1):
+            my_query[3] = 0
+
+        # Check aux buttons 9/10 for Arm Servo
+        if(values_aux[4][9] == 1):
+            my_query[8] += 1
+        if(values_aux[4][10] == 1):
+            my_query[8] -= 1
+
+        # Check aux buttons 5/6 for Linear Actuator
+        if(values_aux[4][5] == 1):
+            my_query[9] += 1
+        if(values_aux[4][6] == 1):
+            my_query[9] -= 1
+
+        # Check aux buttons 2/4 for Camera Servo
+        if(values_aux[4][2] == 1):
+            my_query[10] += 1
+        if(values_aux[4][4] == 1):
+            my_query[10] -= 1
+
+        # create a copy to be referenced in the next run
+        last_query = my_query.copy()
 
         my_query = urllib.parse.urlencode(my_query)
         
