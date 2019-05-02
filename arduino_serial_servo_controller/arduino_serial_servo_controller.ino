@@ -20,6 +20,8 @@ void setup() {
         case 8: // claw
           myservos[x-2].write(45);
           break;
+        case 9: // linear actuator
+          myservos[x-2].write(45);
         default:
           myservos[x-2].write(92);
       }
@@ -50,7 +52,7 @@ void loop() {
           analogWrite(currentServo, float(inByte - 90) * (255.0 / 90.0));
         } else {
           digitalWrite(currentServo + 9, LOW); // Set direction
-          analogWrite(currentServo, float(inByte) * (255.0 / 90.0));          
+          analogWrite(currentServo, float(90 - inByte) * (255.0 / 90.0));          
         }
       }
 //      Serial.print(currentServo);
