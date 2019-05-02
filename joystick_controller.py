@@ -138,14 +138,14 @@ if __name__ == "__main__":
         # map joystick axis values to servos
         my_query = {
                 3: 90, # Motor A/Arm Motor
-                4: str(round((values[1] - values[0])/2)), # right
-                5: str(round((values[1] + values[0])/2)), # left
+                4: str(180 - round((values[1] - 90 + values[0] - 90)/2 + 90)), # right
+                5: str(180 - round((values[1] - values[0])/2 + 90)), # left
                 6: str(180-values[2]), # up-right
                 7: str(180-values[2]), # up-left
                 8: last_query[8], # Arm Servo
                 9: last_query[9], # Linear Actuator
                 10: last_query[10], # Camera Servo
-                11: 90 # Motor B/Mini-bot
+                11: values_aux[3] # Motor B/Mini-bot
                 }
 
         # add something at index 0 to make buttons match visible buttons
