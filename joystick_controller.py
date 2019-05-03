@@ -44,9 +44,9 @@ def readJoystick(js):
 
     # cycle through all joystick axes
     for i, axis in enumerate([js.get_axis(i) for i in range(js.get_numaxes())]):
-        if((not js.get_button(7)) and not (js.get_button(6) and i != 2)):
-            axis = 0
-        norm = (axis + 1.0) * (179/ 2.0) # normalize to the range 0-179
+        norm = (axis + 1.0) * (180/ 2.0) # normalize to the range 0-180
+        # if((not js.get_button(7)) and not (js.get_button(6) and i != 2)):
+        #     norm = 88
         output.append(round(norm))
 
         # print the axis number for debugging
@@ -70,16 +70,19 @@ def readJoystick(js):
     #pygame.event.clear()
     return output
 
+def constrain(val, low=0, high=180):
+    return max(min(val, high), low)
+
 last_query = {
-        3: 0, # Motor A/Arm Motor
-        4: 90, # right
-        5: 90, # left
-        6: 90, # up-right
-        7: 90, # up-left
-        8: 90, # Arm Servo
-        9: 90, # Linear Actuator
+        3: 90, # Motor A/Arm Motor
+        4: 92, # right
+        5: 92, # left
+        6: 92, # up-right
+        7: 92, # up-left
+        8: 45, # Arm Servo
+        9: 45, # Linear Actuator
         10: 90, # Camera Servo
-        11: 0 # Motor B/Mini-bot
+        11: 90 # Motor B/Mini-bot
         }
 
 
@@ -134,19 +137,27 @@ if __name__ == "__main__":
         
         # map joystick axis values to servos
         my_query = {
-                3: 0, # Motor A/Arm Motor
-                4: str(round((values[1] - values[0])/2)), # right
-                5: str(round((values[1] + values[0])/2)), # left
-                6: str(values[3]), # up-right
-                7: str(values[3]), # up-left
+                3: 90, # Motor A/Arm Motor
+                4: str(180 - round((values[1] - 90 + values[0] - 90)/2 + 90)), # right
+                5: str(180 - round((values[1] - values[0])/2 + 90)), # left
+                6: str(180-values[2]), # up-right
+                7: str(180-values[2]), # up-left
                 8: last_query[8], # Arm Servo
                 9: last_query[9], # Linear Actuator
                 10: last_query[10], # Camera Servo
-                11: 0 # Motor B/Mini-bot
+                11: values_aux[3] # Motor B/Mini-bot
                 }
 
         # add something at index 0 to make buttons match visible buttons
         values_aux[4].insert(0, 0)
+        values[4].insert(0, 0)
+
+        # Check button 7 for thruster kill
+        if(values[4][7] != 1):
+            my_query[4] = 92
+            my_query[5] = 92
+            my_query[6] = 92
+            my_query[7] = 92
 
         # Check aux buttons 7/8 for Motor A/Arm Motor
         if(values_aux[4][7] == 1): # button 7 pressed
@@ -156,21 +167,25 @@ if __name__ == "__main__":
 
         # Check aux buttons 9/10 for Arm Servo
         if(values_aux[4][9] == 1):
-            my_query[8] += 1
+            my_query[8] += 3
         if(values_aux[4][10] == 1):
-            my_query[8] -= 1
+            my_query[8] -= 3
 
         # Check aux buttons 5/6 for Linear Actuator
         if(values_aux[4][5] == 1):
-            my_query[9] += 1
+            my_query[9] += 3
         if(values_aux[4][6] == 1):
-            my_query[9] -= 1
+            my_query[9] -= 3
 
         # Check aux buttons 2/4 for Camera Servo
         if(values_aux[4][2] == 1):
             my_query[10] += 1
         if(values_aux[4][4] == 1):
             my_query[10] -= 1
+
+        # Constraints
+        my_query[8] = constrain(my_query[8], 45, 80)
+        my_query[9] = constrain(my_query[9], 45, 80)
 
         # create a copy to be referenced in the next run
         last_query = my_query.copy()
@@ -184,7 +199,7 @@ if __name__ == "__main__":
             # prerr(r.text)
         except Exception as e:
             prerr(str(e))
-        time.sleep(0.2) 
+        time.sleep(0.1) 
 
 
 ##### SCRAPS #####
