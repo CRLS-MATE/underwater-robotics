@@ -22,6 +22,7 @@ void setup() {
           break;
         case 9: // linear actuator
           myservos[x-2].write(45);
+          break;
         default:
           myservos[x-2].write(92);
       }
@@ -48,11 +49,21 @@ void loop() {
         myservos[currentServo - 2].write(inByte);
       } else {
         if(inByte > 90) {
-          digitalWrite(currentServo + 9, HIGH); // Set direction
-          analogWrite(currentServo, float(inByte - 90) * (255.0 / 90.0));
+          if(currentServo == 3) {
+            digitalWrite(12, HIGH); // Set direction
+            analogWrite(currentServo, float(inByte - 90) * (255.0 / 90.0));
+          } else {
+            digitalWrite(13, HIGH); // Set direction
+            analogWrite(currentServo, float(inByte - 90) * (170.0 / 90.0));            
+          }
         } else {
-          digitalWrite(currentServo + 9, LOW); // Set direction
-          analogWrite(currentServo, float(90 - inByte) * (255.0 / 90.0));          
+          if(currentServo == 3) {
+            digitalWrite(12, LOW); // Set direction
+            analogWrite(currentServo, float(90 - inByte) * (255.0 / 90.0));        
+          } else {
+            digitalWrite(13, LOW); // Set direction
+            analogWrite(currentServo, float(90 - inByte) * (170.0 / 90.0));            
+          }
         }
       }
 //      Serial.print(currentServo);
