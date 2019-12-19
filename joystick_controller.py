@@ -10,7 +10,7 @@ import requests
 import urllib.parse
 
 # ip of rpi
-rovIP = "192.168.4.1"
+rovIP = "192.168.5.1"
 
 # this is the number of dots that will be used to display the output of an axis
 dots = 8
@@ -79,9 +79,9 @@ last_query = {
         5: 92, # left
         6: 92, # up-right
         7: 92, # up-left
-        8: 45, # Arm Servo
+        10: 90, # Arm Servo
         9: 45, # Linear Actuator
-        10: 90, # Camera Servo
+        8: 90, # Camera Servo
         11: 90 # Motor B/Mini-bot
         }
 
@@ -113,19 +113,23 @@ if __name__ == "__main__":
         prerr("")
         exit(1)
 
-    joystickNum = int(sys.argv[1])
-    joystickNumAux = int(sys.argv[2])
 
     # initialize the joystick that was specified on the command line 
-    js = pygame.joystick.Joystick(joystickNum)
+    js = pygame.joystick.Joystick(0)
     if not js.get_init():
         js.init()
 
     # initialize the joystick that was specified on the command line 
-    js_aux = pygame.joystick.Joystick(joystickNumAux)
+    js_aux = pygame.joystick.Joystick(1)
     if not js_aux.get_init():
         js_aux.init()
-        
+    
+    #If the joysticks are wrong we swap them
+    if not js.get_name() == "Saitek Cyborg USB Stick":
+        js_temp = js_aux
+        js_aux = js
+        js = js_temp
+    
     n = 0 
     # loop and read input
     while True:
@@ -134,6 +138,8 @@ if __name__ == "__main__":
 
         print('\n\n\n', values, '\n\n\n')
         print('\n\n\n', values_aux, '\n\n\n')
+
+        values[2] = .8 * (values[2] - 90) + 90 # scale up thrusters by 80%
         
         # map joystick axis values to servos
         my_query = {
@@ -142,9 +148,9 @@ if __name__ == "__main__":
                 5: str(180 - round((values[1] - values[0])/2 + 90)), # left
                 6: str(180-values[2]), # up-right
                 7: str(180-values[2]), # up-left
-                8: last_query[8], # Arm Servo
+                10: last_query[10], # Arm Servo
                 9: last_query[9], # Linear Actuator
-                10: last_query[10], # Camera Servo
+                8: last_query[8], # Camera Servo
                 11: values_aux[3] # Motor B/Mini-bot
                 }
 
@@ -167,9 +173,9 @@ if __name__ == "__main__":
 
         # Check aux buttons 9/10 for Arm Servo
         if(values_aux[4][9] == 1):
-            my_query[8] += 3
+            my_query[10] += 3
         if(values_aux[4][10] == 1):
-            my_query[8] -= 3
+            my_query[10] -= 3
 
         # Check aux buttons 5/6 for Linear Actuator
         if(values_aux[4][5] == 1):
@@ -179,12 +185,12 @@ if __name__ == "__main__":
 
         # Check aux buttons 2/4 for Camera Servo
         if(values_aux[4][2] == 1):
-            my_query[10] += 1
+            my_query[8] += 1
         if(values_aux[4][4] == 1):
-            my_query[10] -= 1
+            my_query[8] -= 1
 
         # Constraints
-        my_query[8] = constrain(my_query[8], 45, 80)
+        my_query[10] = constrain(my_query[10], 0, 180)
         my_query[9] = constrain(my_query[9], 45, 80)
 
         # create a copy to be referenced in the next run
